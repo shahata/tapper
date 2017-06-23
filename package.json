@@ -1,0 +1,44 @@
+{
+  "private": true,
+  "name": "tapper",
+  "version": "1.0.0",
+  "homepage": "",
+  "author": {
+    "name": "Shahar Talmi",
+    "email": "shahart@wix.com",
+    "url": ""
+  },
+  "scripts": {
+    "start": "yoshi start",
+    "build": ":",
+    "precommit": "yoshi lint",
+    "pretest": "yoshi build",
+    "test": "yoshi test",
+    "posttest": "yoshi lint",
+    "release": "yoshi release"
+  },
+  "devDependencies": {
+    "babel-preset-env": "^1.5.2",
+    "babel-preset-react": "^6.5.0",
+    "babel-preset-stage-3": "^6.24.1",
+    "chai": "^3.5.0",
+    "husky": "^0.13.4",
+    "yoshi": "latest"
+  },
+  "dependencies": {
+    "babel-polyfill": "^6.9.1"
+  },
+  "babel": {
+    "presets": [
+      "react",
+      "stage-3",
+      "env"
+    ]
+  },
+  "eslintConfig": {
+    "extends": "wix/esnext",
+    "env": {
+      "browser": true
+    }
+  }
+}
