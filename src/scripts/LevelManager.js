@@ -1,7 +1,7 @@
-import {SoundManager} from './SoundManager';
-import {ResourceManager} from './ResourceManager';
-import {Customers} from './Customers';
+import {getImageResource, POP_OUT, GAME_TITLE, PREGAME, LEVEL, FONT, MISC} from './ResourceManager';
 import {STATE_PLAY, currentGameState} from './Main';
+import {playSound} from './SoundManager';
+import {Customers} from './Customers';
 
 export const LevelManager = {
   NUM_LEVEL: 1,
@@ -42,11 +42,11 @@ export const LevelManager = {
   SCORE_CUSTOMER: 50,
 
   init() {
-    this.gameTitleImage = ResourceManager.getImageResource('game_title');
-    this.readyToPlayImage = ResourceManager.getImageResource('pregame');
-    this.imageLevel[1] = ResourceManager.getImageResource('level-1');
-    this.fontImage = ResourceManager.getImageResource('font');
-    this.miscImage = ResourceManager.getImageResource('misc');
+    this.gameTitleImage = getImageResource(GAME_TITLE);
+    this.readyToPlayImage = getImageResource(PREGAME);
+    this.imageLevel[1] = getImageResource(LEVEL);
+    this.fontImage = getImageResource(FONT);
+    this.miscImage = getImageResource(MISC);
     this.currentLevel = 1;
     this.score = 0;
     this.life = this.MAX_LIFE;
@@ -67,14 +67,14 @@ export const LevelManager = {
           Customers.add(2, i, Customers.CUSTOMER_WOMAN);
           Customers.add(3, i, Customers.CUSTOMER_BLACK_GUY);
           Customers.add(4, i, Customers.CUSTOMER_GRAY_HAT_COWBOY);
-          SoundManager.play(SoundManager.POP_OUT, false);
+          playSound(POP_OUT);
         }
       } else {
         const randomRow = Math.floor(Math.random() * 5);
         if ((randomRow !== 0) && (randomRow !== this.lastRow)) {
           const randomCustomerType = Math.floor(Math.random() * (Customers.MAX_CUSTOMER_TYPE));
           Customers.add(randomRow, 1, randomCustomerType);
-          SoundManager.play(SoundManager.POP_OUT, false);
+          playSound(POP_OUT);
           this.lastRow = randomRow;
         }
       }
@@ -87,7 +87,7 @@ export const LevelManager = {
   },
 
   lifeLost() {
-    this.life -= 1;
+    this.life--;
   },
 
   displayScore(context) {
@@ -97,10 +97,8 @@ export const LevelManager = {
     for (let i = scoreText.length; i--;) {
       offset = (scoreText.charAt(i) * this.FONT_SIZE) + this.FONT_NUM_OFF;
       context.drawImage(this.fontImage,
-        offset, this.FONT_Y_OFF,
-        this.FONT_SIZE, this.FONT_SIZE,
-        xPos, this.SCORE_Y_POS,
-        this.FONT_SIZE, this.FONT_SIZE);
+        offset, this.FONT_Y_OFF, this.FONT_SIZE, this.FONT_SIZE,
+        xPos, this.SCORE_Y_POS, this.FONT_SIZE, this.FONT_SIZE);
       xPos -= this.FONT_SIZE;
     }
   },
@@ -112,10 +110,8 @@ export const LevelManager = {
     for (let i = diffText.length; i--;) {
       offset = (diffText.charAt(i) * this.FONT_SIZE) + this.FONT_NUM_OFF;
       context.drawImage(this.fontImage,
-   offset, this.FONT_Y_OFF,
-   this.FONT_SIZE, this.FONT_SIZE,
-   xPos, this.SCORE_Y_POS,
-   this.FONT_SIZE, this.FONT_SIZE);
+        offset, this.FONT_Y_OFF, this.FONT_SIZE, this.FONT_SIZE,
+        xPos, this.SCORE_Y_POS, this.FONT_SIZE, this.FONT_SIZE);
       xPos -= this.FONT_SIZE;
     }
   },
@@ -128,10 +124,8 @@ export const LevelManager = {
 
     for (let i = this.life; i--;) {
       context.drawImage(this.miscImage,
-   this.LIFE_ICON_OFF, 0,
-   this.ICON_SIZE, this.ICON_SIZE,
-   xPos, this.LIFE_Y_POS,
-   this.ICON_SIZE, this.ICON_SIZE);
+        this.LIFE_ICON_OFF, 0, this.ICON_SIZE, this.ICON_SIZE,
+        xPos, this.LIFE_Y_POS, this.ICON_SIZE, this.ICON_SIZE);
       xPos -= this.FONT_SIZE;
     }
   },
@@ -172,7 +166,6 @@ export const LevelManager = {
       Customers.add(3, i, Customers.CUSTOMER_BLACK_GUY);
       Customers.add(4, i, Customers.CUSTOMER_GRAY_HAT_COWBOY);
     }
-
     this.lastRow = -1;
     setTimeout(() => LevelManager.addCustomer(), (this.timeStep * 1000));
   },

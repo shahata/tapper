@@ -1,5 +1,5 @@
-import {Game} from './scripts/Main';
+import {initGame} from './scripts/Main';
 
 window.onload = function () {
-  Game.initialize();
+  initGame();
 };

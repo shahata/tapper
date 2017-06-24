@@ -1,8 +1,8 @@
-import {SoundManager} from './SoundManager';
-import {ResourceManager} from './ResourceManager';
-import {LevelManager} from './LevelManager';
-import {BeerGlass} from './BeerGlass';
+import {getImageResource, TIP_APPEAR, COLLECT_TIP, OUT_DOOR, CUSTOMERS, BEER_GLASS} from './ResourceManager';
 import {STATE_PLAY, FPS, currentGameState} from './Main';
+import {LevelManager} from './LevelManager';
+import {playSound} from './SoundManager';
+import {BeerGlass} from './BeerGlass';
 
 export const Customers = {
   STEP: 1,
@@ -44,8 +44,8 @@ export const Customers = {
   },
 
   init() {
-    this.spriteImage = ResourceManager.getImageResource('customers');
-    this.miscImage = ResourceManager.getImageResource('BeerGlass');
+    this.spriteImage = getImageResource(CUSTOMERS);
+    this.miscImage = getImageResource(BEER_GLASS);
   },
 
   reset() {
@@ -78,7 +78,7 @@ export const Customers = {
             Customers.bonus.visible = false;
             Customers.bonus.timeoutReached = true;
           }, this.bonus.timeout);
-          SoundManager.play(SoundManager.TIP_APPEAR, false);
+          playSound(TIP_APPEAR);
         }
       }
     }
@@ -88,17 +88,15 @@ export const Customers = {
     if ((this.bonus.visible) && (this.bonus.row === row) && (xPos <= this.bonus.xPos + this.spriteWidth)) {
       this.bonus.visible = false;
       LevelManager.addScore(LevelManager.SCORE_BONUS);
-      SoundManager.play(SoundManager.COLLECT_TIP, false);
+      playSound(COLLECT_TIP);
     }
   },
 
   drawBonus(context) {
     if (this.bonus.visible) {
       context.drawImage(this.miscImage,
-        this.BONUS_OFF * 32, 0,
-        this.spriteWidth, this.spriteHeight,
-        this.bonus.xPos, this.bonus.yPos,
-        this.spriteWidth, this.spriteHeight);
+        this.BONUS_OFF * 32, 0, this.spriteWidth, this.spriteHeight,
+        this.bonus.xPos, this.bonus.yPos, this.spriteWidth, this.spriteHeight);
     }
   },
 
@@ -146,7 +144,7 @@ export const Customers = {
           if (customer.isOut) {
             customerArrayCopy.splice(i, 1);
             copyFlag = true;
-            SoundManager.play(SoundManager.OUT_DOOR, false);
+            playSound(OUT_DOOR);
             LevelManager.addScore(LevelManager.SCORE_CUSTOMER);
             continue;
           } else if ((customer.xPos > this.maxPos[rowCount]) && (customer.state === customer.STATE_WAIT)) {
@@ -161,17 +159,13 @@ export const Customers = {
           ret = rowCount;
         }
         context.drawImage(this.spriteImage,
-          customer.sprite, this.CUSTOMER_Y_OFFSET[customer.type],
-          this.spriteWidth, this.spriteHeight,
-          customer.xPos, customer.yPos,
-          this.spriteWidth, this.spriteHeight);
+          customer.sprite, this.CUSTOMER_Y_OFFSET[customer.type], this.spriteWidth, this.spriteHeight,
+          customer.xPos, customer.yPos, this.spriteWidth, this.spriteHeight);
 
         if (customer.state !== customer.STATE_WAIT) {
           context.drawImage(this.spriteImage,
-            customer.sprite2, this.CUSTOMER_Y_OFFSET[customer.type],
-            this.spriteWidth, this.spriteHeight,
-            customer.xPos + 32, customer.yPos2,
-            this.spriteWidth, this.spriteHeight);
+            customer.sprite2, this.CUSTOMER_Y_OFFSET[customer.type], this.spriteWidth, this.spriteHeight,
+            customer.xPos + 32, customer.yPos2, this.spriteWidth, this.spriteHeight);
         }
       }
 

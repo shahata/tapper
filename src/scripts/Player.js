@@ -1,5 +1,5 @@
-import {SoundManager} from './SoundManager';
-import {ResourceManager} from './ResourceManager';
+import {getImageResource, BARMAN_ZIP_UP, BARMAN_ZIP_DOWN, MUG_FILL1, MUG_FILL2, FULL_MUG, THROW_MUG, BARMAN} from './ResourceManager';
+import {playSound} from './SoundManager';
 import {BeerGlass} from './BeerGlass';
 import {Customers} from './Customers';
 
@@ -64,7 +64,7 @@ export const Player = {
   legAnimationTiming: 20,
 
   init() {
-    this.spriteImage = ResourceManager.getImageResource('barman');
+    this.spriteImage = getImageResource(BARMAN);
   },
 
   reset() {
@@ -104,62 +104,52 @@ export const Player = {
   drawTapper(context) {
     for (let rowNum = 1; rowNum < 5; rowNum++) {
       if ((this.currentRow !== rowNum) || (!this.tapperServing) || (this.goState !== 0)) {
-        context.drawImage(this.spriteImage, (this.TAPPER_1 * 32), 0,
-          this.spriteWidth, this.spriteHeight,
-          this.rowRBound[rowNum] + 12, this.rowYPos[rowNum] - 24,
-          this.spriteWidth, this.spriteHeight);
+        context.drawImage(this.spriteImage,
+          this.TAPPER_1 * 32, 0, this.spriteWidth, this.spriteHeight,
+          this.rowRBound[rowNum] + 12, this.rowYPos[rowNum] - 24, this.spriteWidth, this.spriteHeight);
       } else {
-        context.drawImage(this.spriteImage, (this.tapperState * 32), 0,
-          this.spriteWidth, this.spriteHeight,
-          this.rowRBound[rowNum] + 12, this.rowYPos[rowNum] - 30,
-          this.spriteWidth, this.spriteHeight);
+        context.drawImage(this.spriteImage,
+          this.tapperState * 32, 0, this.spriteWidth, this.spriteHeight,
+          this.rowRBound[rowNum] + 12, this.rowYPos[rowNum] - 30, this.spriteWidth, this.spriteHeight);
       }
     }
   },
 
   drawServing(context) {
     for (let i = 1, count = this.servingCounter + 1; i < count; i++) {
-      context.drawImage(this.spriteImage, (this.BEER_FILL[i] * 32), 0,
-        this.spriteWidth, this.spriteHeight,
-        this.playerXPos + 12, this.playerYPos + 2,
-        this.spriteWidth, this.spriteHeight);
+      context.drawImage(this.spriteImage,
+        this.BEER_FILL[i] * 32, 0, this.spriteWidth, this.spriteHeight,
+        this.playerXPos + 12, this.playerYPos + 2, this.spriteWidth, this.spriteHeight);
     }
     if (this.tapperState === this.TAPPER_2) {
-      context.drawImage(this.spriteImage, (this.SERVE_UP_1_1 * 32), 0,
-        this.spriteWidth, this.spriteHeight,
-        this.playerXPos - 20, this.playerYPos + 2,
-        this.spriteWidth, this.spriteHeight);
-      context.drawImage(this.spriteImage, (this.SERVE_UP_1_2 * 32), 0,
-        this.spriteWidth, this.spriteHeight,
-        this.playerXPos + 12, this.playerYPos + 2,
-        this.spriteWidth, this.spriteHeight);
-      context.drawImage(this.spriteImage, ((this.SERVE_DOWN_1) * 32), 0,
-        this.spriteWidth, this.spriteHeight,
-        this.playerXPos - 20, this.playerYPos + this.spriteHeight + 2,
-        this.spriteWidth, this.spriteHeight);
+      context.drawImage(this.spriteImage,
+        this.SERVE_UP_1_1 * 32, 0, this.spriteWidth, this.spriteHeight,
+        this.playerXPos - 20, this.playerYPos + 2, this.spriteWidth, this.spriteHeight);
+      context.drawImage(this.spriteImage,
+        this.SERVE_UP_1_2 * 32, 0, this.spriteWidth, this.spriteHeight,
+        this.playerXPos + 12, this.playerYPos + 2, this.spriteWidth, this.spriteHeight);
+      context.drawImage(this.spriteImage,
+        this.SERVE_DOWN_1 * 32, 0, this.spriteWidth, this.spriteHeight,
+        this.playerXPos - 20, this.playerYPos + this.spriteHeight + 2, this.spriteWidth, this.spriteHeight);
     } else {
-      context.drawImage(this.spriteImage, (this.SERVE_UP_2_1 * 32), 0,
-        this.spriteWidth, this.spriteHeight,
-        this.playerXPos - 20, this.playerYPos + 2,
-        this.spriteWidth, this.spriteHeight);
-      context.drawImage(this.spriteImage, (this.SERVE_UP_2_2 * 32), 0,
-        this.spriteWidth, this.spriteHeight,
-        this.playerXPos + 12, this.playerYPos + 2,
-        this.spriteWidth, this.spriteHeight);
-      context.drawImage(this.spriteImage, ((this.SERVE_DOWN_2) * 32), 0,
-        this.spriteWidth, this.spriteHeight,
-        this.playerXPos - 20, this.playerYPos + this.spriteHeight + 2,
-        this.spriteWidth, this.spriteHeight);
+      context.drawImage(this.spriteImage,
+        this.SERVE_UP_2_1 * 32, 0, this.spriteWidth, this.spriteHeight,
+        this.playerXPos - 20, this.playerYPos + 2, this.spriteWidth, this.spriteHeight);
+      context.drawImage(this.spriteImage,
+        this.SERVE_UP_2_2 * 32, 0, this.spriteWidth, this.spriteHeight,
+        this.playerXPos + 12, this.playerYPos + 2, this.spriteWidth, this.spriteHeight);
+      context.drawImage(this.spriteImage,
+        this.SERVE_DOWN_2 * 32, 0, this.spriteWidth, this.spriteHeight,
+        this.playerXPos - 20, this.playerYPos + this.spriteHeight + 2, this.spriteWidth, this.spriteHeight);
     }
   },
 
   draw(context) {
     Player.drawTapper(context);
     if (this.lastRow !== 0) {
-      context.drawImage(this.spriteImage, (this.goState * 32), 0,
-        this.spriteWidth, this.spriteHeight,
-        this.lastPlayerXPos, this.rowYPos[this.lastRow],
-        this.spriteWidth, this.spriteHeight);
+      context.drawImage(this.spriteImage,
+        this.goState * 32, 0, this.spriteWidth, this.spriteHeight,
+        this.lastPlayerXPos, this.rowYPos[this.lastRow], this.spriteWidth, this.spriteHeight);
       this.goState += 1;
 
       if (this.goState > this.GO4) {
@@ -175,35 +165,29 @@ export const Player = {
       return true;
     }
 
-    context.drawImage(this.spriteImage, (this.playerAction * 32), 0,
-      this.spriteWidth, this.spriteHeight,
-      this.playerXPos, this.playerYPos,
-      this.spriteWidth, this.spriteHeight);
+    context.drawImage(this.spriteImage,
+      this.playerAction * 32, 0, this.spriteWidth, this.spriteHeight,
+      this.playerXPos, this.playerYPos, this.spriteWidth, this.spriteHeight);
 
     if (!this.playerRunning) {
       Player.setAnimation();
-      context.drawImage(this.spriteImage, ((2 + this.playerAction) * 32), 0,
-        this.spriteWidth, this.spriteHeight,
-        this.playerXPos, this.playerYPos + this.spriteHeight,
-        this.spriteWidth, this.spriteHeight);
+      context.drawImage(this.spriteImage,
+        (2 + this.playerAction) * 32, 0, this.spriteWidth, this.spriteHeight,
+        this.playerXPos, this.playerYPos + this.spriteHeight, this.spriteWidth, this.spriteHeight);
     } else if (this.playerGoLeft) {
-      context.drawImage(this.spriteImage, ((this.legState) * 32), 0,
-        this.spriteWidth, this.spriteHeight,
-        this.playerXPos, this.playerYPos + this.spriteHeight,
-        this.spriteWidth, this.spriteHeight);
-      context.drawImage(this.spriteImage, ((this.legState + 1) * 32), 0,
-        this.spriteWidth, this.spriteHeight,
-        this.playerXPos + this.spriteHeight, this.playerYPos + this.spriteHeight,
-        this.spriteWidth, this.spriteHeight);
+      context.drawImage(this.spriteImage,
+        this.legState * 32, 0, this.spriteWidth, this.spriteHeight,
+        this.playerXPos, this.playerYPos + this.spriteHeight, this.spriteWidth, this.spriteHeight);
+      context.drawImage(this.spriteImage,
+        (this.legState + 1) * 32, 0, this.spriteWidth, this.spriteHeight,
+        this.playerXPos + this.spriteHeight, this.playerYPos + this.spriteHeight, this.spriteWidth, this.spriteHeight);
     } else {
-      context.drawImage(this.spriteImage, ((this.legState + this.RUN_DOWN_RIGHT_OFF) * 32), 0,
-        this.spriteWidth, this.spriteHeight,
-        this.playerXPos, this.playerYPos + this.spriteHeight,
-        this.spriteWidth, this.spriteHeight);
-      context.drawImage(this.spriteImage, ((this.legState + 1 + this.RUN_DOWN_RIGHT_OFF) * 32), 0,
-        this.spriteWidth, this.spriteHeight,
-        (this.playerXPos - this.spriteHeight), this.playerYPos + this.spriteHeight,
-        this.spriteWidth, this.spriteHeight);
+      context.drawImage(this.spriteImage,
+        (this.legState + this.RUN_DOWN_RIGHT_OFF) * 32, 0, this.spriteWidth, this.spriteHeight,
+        this.playerXPos, this.playerYPos + this.spriteHeight, this.spriteWidth, this.spriteHeight);
+      context.drawImage(this.spriteImage,
+        (this.legState + 1 + this.RUN_DOWN_RIGHT_OFF) * 32, 0, this.spriteWidth, this.spriteHeight,
+        this.playerXPos - this.spriteHeight, this.playerYPos + this.spriteHeight, this.spriteWidth, this.spriteHeight);
     }
     return true;
   },
@@ -222,7 +206,7 @@ export const Player = {
         this.lastPlayerXPos = this.playerXPos;
         this.playerXPos = this.rowXPos[this.currentRow];
         this.playerYPos = this.rowYPos[this.currentRow];
-        SoundManager.play(SoundManager.BARMAN_ZIP_UP);
+        playSound(BARMAN_ZIP_UP);
         break;
       case this.DOWN:
         this.tapperServing = false;
@@ -235,7 +219,7 @@ export const Player = {
         this.lastPlayerXPos = this.playerXPos;
         this.playerXPos = this.rowXPos[this.currentRow];
         this.playerYPos = this.rowYPos[this.currentRow];
-        SoundManager.play(SoundManager.BARMAN_ZIP_DOWN);
+        playSound(BARMAN_ZIP_DOWN);
         break;
       case this.LEFT:
         this.tapperServing = false;
@@ -280,14 +264,14 @@ export const Player = {
           this.servingCounter += 1;
           switch (this.servingCounter) {
             case 1 :
-              SoundManager.play(SoundManager.MUG_FILL1);
+              playSound(MUG_FILL1);
               break;
             case 2 :
             case 3 :
-              SoundManager.play(SoundManager.MUG_FILL2);
+              playSound(MUG_FILL2);
               break;
             case this.SERVING_MAX :
-              SoundManager.play(SoundManager.FULL_MUG);
+              playSound(FULL_MUG);
               break;
             default:
               break;
@@ -303,7 +287,7 @@ export const Player = {
             this.tapperServing = false;
             this.playerGoLeft = false;
             this.playerAction = this.STAND_R1;
-            SoundManager.play(SoundManager.THROW_MUG);
+            playSound(THROW_MUG);
           }
         } else {
           if (this.playerGoLeft) {

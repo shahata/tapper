@@ -1,9 +1,9 @@
-import {SoundManager} from './SoundManager';
-import {ResourceManager} from './ResourceManager';
-import {LevelManager} from './LevelManager';
-import {Player} from './Player';
-import {Customers} from './Customers';
+import {getImageResource, BEER_GLASS, GRAB_MUG} from './ResourceManager';
 import {STATE_PLAY, FPS, currentGameState} from './Main';
+import {LevelManager} from './LevelManager';
+import {playSound} from './SoundManager';
+import {Customers} from './Customers';
+import {Player} from './Player';
 
 export const BeerGlass = {
   SPRITE_FULL_1: 0,
@@ -23,7 +23,7 @@ export const BeerGlass = {
   spriteImage: null,
 
   init() {
-    this.spriteImage = ResourceManager.getImageResource('BeerGlass');
+    this.spriteImage = getImageResource(BEER_GLASS);
   },
 
   reset() {
@@ -58,7 +58,7 @@ export const BeerGlass = {
 
   checkPlayerCollision(glass, row) {
     if ((Player.currentRow === row) && (glass.xPos + this.spriteWidth >= Player.playerXPos)) {
-      SoundManager.play(SoundManager.GRAB_MUG, false);
+      playSound(GRAB_MUG);
       LevelManager.addScore(LevelManager.SCORE_EMPTY_BEER);
       return true;
     }
@@ -100,10 +100,9 @@ export const BeerGlass = {
       if (collision) {
         glassArrayCopy.splice(i, 1);
       } else {
-        context.drawImage(this.spriteImage, glass.sprite, 0,
-          this.spriteWidth, this.spriteHeight,
-          glass.xPos, glass.yPos,
-          this.spriteWidth, this.spriteHeight);
+        context.drawImage(this.spriteImage,
+          glass.sprite, 0, this.spriteWidth, this.spriteHeight,
+          glass.xPos, glass.yPos, this.spriteWidth, this.spriteHeight);
       }
     }
 
@@ -138,10 +137,9 @@ export const BeerGlass = {
       if (collision) {
         glassArrayCopy.splice(i, 1);
       } else {
-        context.drawImage(this.spriteImage, glass.sprite, 0,
-          this.spriteWidth, this.spriteHeight,
-          glass.xPos, glass.yPos,
-          this.spriteWidth, this.spriteHeight);
+        context.drawImage(this.spriteImage,
+          glass.sprite, 0, this.spriteWidth, this.spriteHeight,
+          glass.xPos, glass.yPos, this.spriteWidth, this.spriteHeight);
       }
     }
 
