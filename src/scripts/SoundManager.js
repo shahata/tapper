@@ -26,7 +26,9 @@ export function stopSound(soundId) {
 
 export function playSound(soundId, loop = false) {
   const freeChannel = audioChannels[soundId].find(channel => channel.paused || channel.ended);
-  freeChannel.currentTime = 0;
-  freeChannel.loop = loop;
-  freeChannel.play();
+  if (freeChannel) {
+    freeChannel.currentTime = 0;
+    freeChannel.loop = loop;
+    freeChannel.play();
+  }
 }

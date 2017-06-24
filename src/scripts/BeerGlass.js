@@ -4,7 +4,7 @@ import {playSound} from './SoundManager';
 import {Customers} from './Customers';
 import {Player} from './Player';
 
-let glasses = new Array(5).fill().map(() => []);
+let glasses = [];
 let spriteImage = null;
 
 export function initBeerGlasses() {
@@ -12,23 +12,21 @@ export function initBeerGlasses() {
 }
 
 export function resetBeerGlasses() {
-  glasses = glasses.map(() => []);
+  glasses = [];
 }
 
 export function addBeerGlass(row, xPos, full) {
-  glasses[row].push(new Glass(row, xPos, LevelManager.rowYPos[row] + 8, full));
+  glasses.push(new Glass(row, xPos, full));
 }
 
 export function updateBeerGlasses() {
-  glasses = glasses.map(row => {
-    row.forEach(glass => glass.update());
-    return row.filter(glass => !glass.checkCollision());
-  });
-  return glasses.some(row => row.some(glass => glass.broken));
+  glasses.forEach(glass => glass.update());
+  glasses = glasses.filter(glass => !glass.checkCollision());
+  return glasses.some(glass => glass.broken);
 }
 
 export function drawBeerGlasses(context) {
-  glasses.forEach(row => row.forEach(glass => glass.draw(context)));
+  glasses.forEach(glass => glass.draw(context));
 }
 
 const spriteWidth = 32;
@@ -57,13 +55,13 @@ function checkPlayerCollision(glass, row) {
   return false;
 }
 
-function Glass(row, defaultXPos, defaultYPos, full) {
+function Glass(row, defaultXPos, full) {
   return {
     sprite: SPRITE_FULL_1,
     xPos: defaultXPos,
-    yPos: defaultYPos,
-    leftBound: LevelManager.rowLBound[row] - 4,
-    rightBound: LevelManager.rowRBound[row] + 16,
+    yPos: LevelManager.rowYPos[row] + 8,
+    leftBound: LevelManager.rowLBound[row] - STEP,
+    rightBound: LevelManager.rowRBound[row] + (spriteWidth / 2),
     fpsCount: 0,
     fpsMax: 60 / 2,
     broken: false,
@@ -74,7 +72,6 @@ function Glass(row, defaultXPos, defaultYPos, full) {
           this.sprite = this.sprite === SPRITE_FULL_1 ? SPRITE_FULL_2 : SPRITE_FULL_1;
           this.fpsCount = 0;
         }
-
         if (this.xPos > this.leftBound) {
           this.xPos -= STEP;
         } else {
@@ -88,7 +85,7 @@ function Glass(row, defaultXPos, defaultYPos, full) {
         } else {
           this.broken = true;
           this.sprite = SPRITE_FALLING;
-          this.xPos += 16;
+          this.xPos += spriteWidth / 2;
           this.yPos += spriteHeight;
         }
       }
