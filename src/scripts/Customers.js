@@ -151,7 +151,6 @@ export const Customers = {
         if ((customer.EndOfRow) && (this.oneReachEndOfRow === false)) {
           this.oneReachEndOfRow = true;
           this.endOfTheRowCustomer = customer;
-          LevelManager.lifeLost();
           ret = rowCount;
         }
         context.drawImage(this.spriteImage,

@@ -2,7 +2,7 @@ import {loadAllResources, GET_READY_TO_SERVE, OH_SUSANNA, YOU_LOSE, LAUGHING} fr
 import {initFrameBuffer, drawFrameBuffer} from './System';
 import {playSound, stopSound} from './SoundManager';
 import {LevelManager} from './LevelManager';
-import {initBeerGlass, resetBeerGlass, drawBeerGlass} from './BeerGlass';
+import {initBeerGlasses, resetBeerGlasses, drawBeerGlasses, updateBeerGlasses} from './BeerGlass';
 import {Customers} from './Customers';
 import {Player} from './Player';
 
@@ -24,7 +24,7 @@ export function initGame() {
 function loaded() {
   LevelManager.init();
   Player.init();
-  initBeerGlass();
+  initBeerGlasses();
   Customers.init();
   document.onkeydown = onKeyPress;
   document.onkeyup = onKeyRelease;
@@ -35,7 +35,7 @@ function loaded() {
 function reset() {
   currentGameState = STATE_READY;
   Player.reset();
-  resetBeerGlass();
+  resetBeerGlasses();
   Customers.reset();
   LevelManager.reset();
   playSound(GET_READY_TO_SERVE);
@@ -46,6 +46,7 @@ function reset() {
 }
 
 function lost() {
+  LevelManager.lifeLost();
   Player.lost();
   stopSound(OH_SUSANNA);
   if (LevelManager.life <= 0) {
@@ -64,8 +65,11 @@ function onUpdateFrame() {
   } else if (currentGameState === STATE_READY) {
     LevelManager.displayReadyToPlay(frameBuffer);
   } else {
+    if (currentGameState === STATE_PLAY && updateBeerGlasses()) {
+      lost();
+    }
     LevelManager.drawLevelBackground(frameBuffer);
-    if (Customers.draw(frameBuffer) !== 0 || drawBeerGlass(frameBuffer) !== 0) {
+    if (Customers.draw(frameBuffer) !== 0 || drawBeerGlasses(frameBuffer)) {
       lost();
     }
     keyPressAllowed = Player.draw(frameBuffer);
