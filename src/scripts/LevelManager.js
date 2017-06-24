@@ -45,7 +45,6 @@ export const LevelManager = {
     this.imageLevel[1] = getImageResource(LEVEL_1);
     this.fontImage = getImageResource(FONT);
     this.miscImage = getImageResource(MISC);
-    this.newGame();
   },
 
   newGame() {
