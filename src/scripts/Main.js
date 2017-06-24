@@ -17,7 +17,7 @@ let keyPressAllowed = true;
 let frameBuffer = null;
 
 export function initGame() {
-  frameBuffer = initFrameBuffer('tapperJS', 512, 480, false, 1.0);
+  frameBuffer = initFrameBuffer('tapper', 512, 480, false, 1.0);
   loadAllResources().then(loaded);
 }
 
