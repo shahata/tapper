@@ -17,7 +17,7 @@ export const COLLECT_TIP = 'collect-tip';
 export const TIP_APPEAR = 'tip-appear';
 export const GAME_TITLE = 'game-title';
 export const PREGAME = 'pregame';
-export const LEVEL = 'level';
+export const LEVEL_1 = 'level-1';
 export const BARMAN = 'barman';
 export const BEER_GLASS = 'beer-glass';
 export const CUSTOMERS = 'customers';
@@ -27,7 +27,7 @@ export const MISC = 'misc';
 const imageData = [
  {name: GAME_TITLE, src: 'assets/images/game_title.png'},
  {name: PREGAME, src: 'assets/images/pregame.png'},
- {name: LEVEL, src: 'assets/images/level-1.png'},
+ {name: LEVEL_1, src: 'assets/images/level-1.png'},
  {name: BARMAN, src: 'assets/images/barman.png'},
  {name: BEER_GLASS, src: 'assets/images/BeerGlass.png'},
  {name: CUSTOMERS, src: 'assets/images/customers.png'},
@@ -70,19 +70,6 @@ function preLoadSounds() {
 
 export function loadAllResources() {
   return Promise.all([preloadImages(), preLoadSounds()]);
-}
-
-export function displayLoadingScreen(context) {
-  const loadingScreenLogo = new Image();
-  loadingScreenLogo.src = 'assets/images/loading_title.png';
-  context.fillStyle = 'black';
-  context.fillRect(0, 0, context.canvas.width, context.canvas.height);
-  context.fill();
-  context.drawImage(loadingScreenLogo, (context.canvas.width - 234) / 2, (context.canvas.height - 104) / 2);
-  context.fillStyle = 'white';
-  context.font = 'bold 14px Courier';
-  context.textBaseline = 'top';
-  context.fillText('Loading...', 218, 300);
 }
 
 export function getImageResource(name) {

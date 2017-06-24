@@ -1,6 +1,6 @@
 import {getImageResource, BARMAN_ZIP_UP, BARMAN_ZIP_DOWN, MUG_FILL1, MUG_FILL2, FULL_MUG, THROW_MUG, BARMAN} from './ResourceManager';
 import {playSound} from './SoundManager';
-import {BeerGlass} from './BeerGlass';
+import {addBeerGlass} from './BeerGlass';
 import {Customers} from './Customers';
 
 export const Player = {
@@ -283,7 +283,7 @@ export const Player = {
           this.tapperState = this.TAPPER_2;
           if (this.servingCounter === this.SERVING_MAX) {
             this.servingCounter = 0;
-            BeerGlass.add(this.currentRow, (this.playerXPos - this.spriteWidth), BeerGlass.FULL_MUG);
+            addBeerGlass(this.currentRow, this.playerXPos - this.spriteWidth, true);
             this.tapperServing = false;
             this.playerGoLeft = false;
             this.playerAction = this.STAND_R1;

@@ -1,10 +1,9 @@
-import {getImageResource, POP_OUT, GAME_TITLE, PREGAME, LEVEL, FONT, MISC} from './ResourceManager';
+import {getImageResource, POP_OUT, GAME_TITLE, PREGAME, LEVEL_1, FONT, MISC} from './ResourceManager';
 import {STATE_PLAY, currentGameState} from './Main';
 import {playSound} from './SoundManager';
 import {Customers} from './Customers';
 
 export const LevelManager = {
-  NUM_LEVEL: 1,
   MAX_LIFE: 3,
   rowLBound: [null, 120, 88, 56, 24],
   rowRBound: [null, 304, 334, 368, 400],
@@ -17,8 +16,7 @@ export const LevelManager = {
   wave: 1,
   lastRow: -1,
   timeCounter: 0,
-  timeStep: 3,
-  TIME_COUNTER_MAX: 60,
+  timeStep: 3000,
   fontImage: null,
   miscImage: null,
   gameTitleImage: null,
@@ -44,15 +42,20 @@ export const LevelManager = {
   init() {
     this.gameTitleImage = getImageResource(GAME_TITLE);
     this.readyToPlayImage = getImageResource(PREGAME);
-    this.imageLevel[1] = getImageResource(LEVEL);
+    this.imageLevel[1] = getImageResource(LEVEL_1);
     this.fontImage = getImageResource(FONT);
     this.miscImage = getImageResource(MISC);
+    this.newGame();
+  },
+
+  newGame() {
     this.currentLevel = 1;
     this.score = 0;
     this.life = this.MAX_LIFE;
     this.difficulty = 1;
     this.wave = 1;
     this.timeCounter = 0;
+    this.lastRow = -1;
   },
 
   addCustomer() {
@@ -78,7 +81,7 @@ export const LevelManager = {
           this.lastRow = randomRow;
         }
       }
-      setTimeout(() => LevelManager.addCustomer(), (this.timeStep * 1000));
+      setTimeout(() => LevelManager.addCustomer(), this.timeStep);
     }
   },
 
@@ -90,25 +93,11 @@ export const LevelManager = {
     this.life--;
   },
 
-  displayScore(context) {
-    const scoreText = '' + this.score;
-    let xPos = this.SCORE_X_POS;
+  displayNumber(context, number, xPos) {
+    const text = '' + number;
     let offset;
-    for (let i = scoreText.length; i--;) {
-      offset = (scoreText.charAt(i) * this.FONT_SIZE) + this.FONT_NUM_OFF;
-      context.drawImage(this.fontImage,
-        offset, this.FONT_Y_OFF, this.FONT_SIZE, this.FONT_SIZE,
-        xPos, this.SCORE_Y_POS, this.FONT_SIZE, this.FONT_SIZE);
-      xPos -= this.FONT_SIZE;
-    }
-  },
-
-  displayDifficulty(context) {
-    const diffText = '' + this.difficulty;
-    let xPos = this.DIFF_X_POS;
-    let offset;
-    for (let i = diffText.length; i--;) {
-      offset = (diffText.charAt(i) * this.FONT_SIZE) + this.FONT_NUM_OFF;
+    for (let i = text.length; i--;) {
+      offset = (text.charAt(i) * this.FONT_SIZE) + this.FONT_NUM_OFF;
       context.drawImage(this.fontImage,
         offset, this.FONT_Y_OFF, this.FONT_SIZE, this.FONT_SIZE,
         xPos, this.SCORE_Y_POS, this.FONT_SIZE, this.FONT_SIZE);
@@ -167,23 +156,13 @@ export const LevelManager = {
       Customers.add(4, i, Customers.CUSTOMER_GRAY_HAT_COWBOY);
     }
     this.lastRow = -1;
-    setTimeout(() => LevelManager.addCustomer(), (this.timeStep * 1000));
-  },
-
-  newGame() {
-    this.currentLevel = 1;
-    this.score = 0;
-    this.life = this.MAX_LIFE;
-    this.difficulty = 1;
-    this.wave = 1;
-    this.timeCounter = 0;
-    this.lastRow = -1;
+    setTimeout(() => LevelManager.addCustomer(), this.timeStep);
   },
 
   drawGameHUD(context) {
-    LevelManager.displayScore(context);
+    LevelManager.displayNumber(context, this.score, this.SCORE_X_POS);
+    LevelManager.displayNumber(context, this.difficulty, this.DIFF_X_POS);
     LevelManager.displayLife(context);
-    LevelManager.displayDifficulty(context);
   },
 
   drawLevelBackground(context) {

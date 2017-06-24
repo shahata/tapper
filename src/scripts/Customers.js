@@ -1,8 +1,8 @@
 import {getImageResource, TIP_APPEAR, COLLECT_TIP, OUT_DOOR, CUSTOMERS, BEER_GLASS} from './ResourceManager';
-import {STATE_PLAY, FPS, currentGameState} from './Main';
+import {STATE_PLAY, currentGameState} from './Main';
 import {LevelManager} from './LevelManager';
 import {playSound} from './SoundManager';
-import {BeerGlass} from './BeerGlass';
+import {addBeerGlass} from './BeerGlass';
 
 export const Customers = {
   STEP: 1,
@@ -100,10 +100,6 @@ export const Customers = {
     }
   },
 
-  stop() {
-
-  },
-
   getFirstCustomerPos(row) {
     if ((this.customerXPos[row] !== -1) && (this.customersList[row][this.customerXPos[row]])) {
       return this.customersList[row][this.customerXPos[row]].xPos;
@@ -198,7 +194,7 @@ function OneCustomer(row, defaultXPos, movingPattern, type) {
     leftBound: LevelManager.rowLBound[row],
     rightBound: LevelManager.rowRBound[row],
     fpsCount: 0,
-    fpsMax: FPS / 8,
+    fpsMax: 60 / 8,
     newXPos: 0,
     EndOfRow: false,
     isOut: false,
@@ -245,7 +241,7 @@ function OneCustomer(row, defaultXPos, movingPattern, type) {
             this.animationCounter = -1;
             this.fpsCount = 0;
             this.sprite = this.movingPattern[0] * 32;
-            BeerGlass.add(this.row, (this.xPos + Customers.spriteWidth), BeerGlass.EMPTY_MUG);
+            addBeerGlass(this.row, this.xPos + Customers.spriteWidth, false);
             Customers.checkBonus(this.row, this.xPos);
           }
           break;
