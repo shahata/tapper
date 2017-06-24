@@ -1,5 +1,7 @@
 # tapper
 
+Overall refactor of [http://obiot.github.io/miniTapper/](http://obiot.github.io/miniTapper/)
+
 ```sh
 $ npm install
 $ npm start
