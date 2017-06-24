@@ -4,182 +4,178 @@ import {LevelManager} from './LevelManager';
 import {playSound} from './SoundManager';
 import {addBeerGlass} from './BeerGlass';
 
-export const Customers = {
-  STEP: 1,
-  CUSTOMER_GREEN_HAT_COWBOY: 0,
-  CUSTOMER_WOMAN: 1,
-  CUSTOMER_BLACK_GUY: 2,
-  CUSTOMER_GRAY_HAT_COWBOY: 3,
-  MAX_CUSTOMER_TYPE: 4,
-  REGULAR_1: 0,
-  REGULAR_2: 1,
-  ANGRY_1: 2,
-  ANGRY_2: 3,
-  HOLDING_BEER_1: 4,
-  HOLDING_BEER_2: 7,
-  DRINKING_BEER_1: 5,
-  DRINKING_BEER_2: 8,
-  BONUS_OFF: 5,
-  CUSTOMER_Y_OFFSET: [0, 32, 64, 96],
-  movingPatternArray: [null,
-    [0, 1, 2, 3, 2, 3, 2, 3, 2, 3, 2, 3, 2, 3, 2, 3],
-    [0, 1, 0, 2, 3, 2, 3, 2, 3, 2, 3, 2, 3],
-    [0, 1, 0, 2, 3, 2, 3, 2, 3],
-    [0, 1, 0, 1, 2, 3, 2, 3]
-  ],
-  customerXPos: [5],
-  maxPos: [5],
-  customersList: [],
-  endOfTheRowCustomer: null,
-  spriteImage: null,
-  miscImage: null,
-  spriteWidth: 32,
-  spriteHeight: 32,
-  bonus: {
-    visible: false,
-    timeout: 10 * 1000,
-    timeoutReached: true,
-    row: 1,
-    xPos: 100
-  },
-
-  init() {
-    this.spriteImage = getImageResource(CUSTOMERS);
-    this.miscImage = getImageResource(BEER_GLASS);
-  },
-
-  reset() {
-    for (let count = 1; count < 5; count++) {
-      this.customersList[count] = [];
-      this.customerXPos[count] = -1;
-    }
-    this.oneReachEndOfRow = false;
-    this.endOfTheRowCustomer = false;
-    this.bonus.visible = false;
-  },
-
-  add(row, pos, type) {
-    const customer = new OneCustomer(row, LevelManager.rowLBound[row], this.movingPatternArray[row], type);
-    customer.xPos += (pos - 1) * this.spriteWidth;
-    this.customersList[row].push(customer);
-  },
-
-  checkBonus(row, customerXPos) {
-    if ((!this.bonus.visible) && (this.bonus.timeoutReached)) {
-      if (customerXPos < (LevelManager.rowLBound[row] + ((LevelManager.rowRBound[row] - LevelManager.rowLBound[row]) / 3))) {
-        const randomRow = Math.floor(Math.random() * 6);
-        if (randomRow === row) {
-          this.bonus.visible = true;
-          this.bonus.row = row;
-          this.bonus.xPos = customerXPos;
-          this.bonus.yPos = LevelManager.rowYPos[row] + 16;
-          this.bonus.timeoutReached = false;
-          setTimeout(() => {
-            Customers.bonus.visible = false;
-            Customers.bonus.timeoutReached = true;
-          }, this.bonus.timeout);
-          playSound(TIP_APPEAR);
-        }
-      }
-    }
-  },
-
-  checkBonusCollision(row, xPos) {
-    if ((this.bonus.visible) && (this.bonus.row === row) && (xPos <= this.bonus.xPos + this.spriteWidth)) {
-      this.bonus.visible = false;
-      LevelManager.addScore(LevelManager.SCORE_BONUS);
-      playSound(COLLECT_TIP);
-    }
-  },
-
-  drawBonus(context) {
-    if (this.bonus.visible) {
-      context.drawImage(this.miscImage,
-        this.BONUS_OFF * 32, 0, this.spriteWidth, this.spriteHeight,
-        this.bonus.xPos, this.bonus.yPos, this.spriteWidth, this.spriteHeight);
-    }
-  },
-
-  getFirstCustomerPos(row) {
-    if ((this.customerXPos[row] !== -1) && (this.customersList[row][this.customerXPos[row]])) {
-      return this.customersList[row][this.customerXPos[row]].xPos;
-    }
-  },
-
-  beerCollisionDetected(row) {
-    if (this.customersList[row][this.customerXPos[row]].state === 0) {
-      this.customersList[row][this.customerXPos[row]].catchBeer();
-      return true;
-    } else {
-      return false;
-    }
-  },
-
-  isAnyCustomer() {
-    return (this.customersList[1].length + this.customersList[2].length + this.customersList[3].length + this.customersList[4].length);
-  },
-
-  draw(context) {
-    let customer;
-    let ret = 0;
-    let customerArrayCopy = null;
-    let copyFlag = false;
-
-    this.customerXPos = [-1, -1, -1, -1, -1];
-    this.maxPos = [0, 0, 0, 0, 0];
-
-    for (let rowCount = 1; rowCount < 5; rowCount++) {
-      customerArrayCopy = this.customersList[rowCount].slice();
-
-      for (let i = this.customersList[rowCount].length; i--;) {
-        customer = this.customersList[rowCount][i];
-
-        if ((!this.oneReachEndOfRow) && (currentGameState === STATE_PLAY)) {
-          customer.update();
-
-          if (customer.isOut) {
-            customerArrayCopy.splice(i, 1);
-            copyFlag = true;
-            playSound(OUT_DOOR);
-            LevelManager.addScore(LevelManager.SCORE_CUSTOMER);
-            continue;
-          } else if ((customer.xPos > this.maxPos[rowCount]) && (customer.state === customer.STATE_WAIT)) {
-            this.customerXPos[rowCount] = i;
-            this.maxPos[rowCount] = customer.xPos;
-          }
-        }
-        if ((customer.EndOfRow) && (this.oneReachEndOfRow === false)) {
-          this.oneReachEndOfRow = true;
-          this.endOfTheRowCustomer = customer;
-          ret = rowCount;
-        }
-        context.drawImage(this.spriteImage,
-          customer.sprite, this.CUSTOMER_Y_OFFSET[customer.type], this.spriteWidth, this.spriteHeight,
-          customer.xPos, customer.yPos, this.spriteWidth, this.spriteHeight);
-
-        if (customer.state !== customer.STATE_WAIT) {
-          context.drawImage(this.spriteImage,
-            customer.sprite2, this.CUSTOMER_Y_OFFSET[customer.type], this.spriteWidth, this.spriteHeight,
-            customer.xPos + 32, customer.yPos2, this.spriteWidth, this.spriteHeight);
-        }
-      }
-
-      if (copyFlag) {
-        this.customersList[rowCount] = customerArrayCopy.slice();
-      }
-    }
-    this.drawBonus(context);
-
-    return ret;
-  }
+export const CUSTOMER_STEP = 1;
+export const CUSTOMER_GREEN_HAT_COWBOY = 0;
+export const CUSTOMER_WOMAN = 1;
+export const CUSTOMER_BLACK_GUY = 2;
+export const CUSTOMER_GRAY_HAT_COWBOY = 3;
+export const MAX_CUSTOMER_TYPE = 4;
+// const REGULAR_1 = 0;
+// const REGULAR_2 = 1;
+// const ANGRY_1 = 2;
+// const ANGRY_2 = 3;
+const HOLDING_BEER_1 = 4;
+const HOLDING_BEER_2 = 7;
+const DRINKING_BEER_1 = 5;
+const DRINKING_BEER_2 = 8;
+const BONUS_OFF = 5;
+const CUSTOMER_Y_OFFSET = [0, 32, 64, 96];
+const movingPatternArray = [null,
+  [0, 1, 2, 3, 2, 3, 2, 3, 2, 3, 2, 3, 2, 3, 2, 3],
+  [0, 1, 0, 2, 3, 2, 3, 2, 3, 2, 3, 2, 3],
+  [0, 1, 0, 2, 3, 2, 3, 2, 3],
+  [0, 1, 0, 1, 2, 3, 2, 3]
+];
+let customerXPos = [5];
+let maxPos = [5];
+const customersList = [];
+let spriteImage = null;
+let miscImage = null;
+let oneReachEndOfRow = false;
+const spriteWidth = 32;
+const spriteHeight = 32;
+const bonus = {
+  visible: false,
+  timeout: 10 * 1000,
+  timeoutReached: true,
+  row: 1,
+  xPos: 100
 };
+
+export function initCustomers() {
+  spriteImage = getImageResource(CUSTOMERS);
+  miscImage = getImageResource(BEER_GLASS);
+}
+
+export function resetCustomers() {
+  for (let count = 1; count < 5; count++) {
+    customersList[count] = [];
+    customerXPos[count] = -1;
+  }
+  oneReachEndOfRow = false;
+  bonus.visible = false;
+}
+
+export function addCustomer(row, pos, type) {
+  const customer = new OneCustomer(row, LevelManager.rowLBound[row], movingPatternArray[row], type);
+  customer.xPos += (pos - 1) * spriteWidth;
+  customersList[row].push(customer);
+}
+
+function checkBonus(row, customerXPos) {
+  if ((!bonus.visible) && (bonus.timeoutReached)) {
+    if (customerXPos < (LevelManager.rowLBound[row] + ((LevelManager.rowRBound[row] - LevelManager.rowLBound[row]) / 3))) {
+      const randomRow = Math.floor(Math.random() * 6);
+      if (randomRow === row) {
+        bonus.visible = true;
+        bonus.row = row;
+        bonus.xPos = customerXPos;
+        bonus.yPos = LevelManager.rowYPos[row] + 16;
+        bonus.timeoutReached = false;
+        setTimeout(() => {
+          bonus.visible = false;
+          bonus.timeoutReached = true;
+        }, bonus.timeout);
+        playSound(TIP_APPEAR);
+      }
+    }
+  }
+}
+
+export function checkBonusCollision(row, xPos) {
+  if ((bonus.visible) && (bonus.row === row) && (xPos <= bonus.xPos + spriteWidth)) {
+    bonus.visible = false;
+    LevelManager.addScore(LevelManager.SCORE_BONUS);
+    playSound(COLLECT_TIP);
+  }
+}
+
+function drawBonus(context) {
+  if (bonus.visible) {
+    context.drawImage(miscImage,
+      BONUS_OFF * 32, 0, spriteWidth, spriteHeight,
+      bonus.xPos, bonus.yPos, spriteWidth, spriteHeight);
+  }
+}
+
+export function getFirstCustomerPos(row) {
+  if ((customerXPos[row] !== -1) && (customersList[row][customerXPos[row]])) {
+    return customersList[row][customerXPos[row]].xPos;
+  }
+}
+
+export function beerCollisionDetected(row) {
+  if (customersList[row][customerXPos[row]].state === 0) {
+    customersList[row][customerXPos[row]].catchBeer();
+    return true;
+  } else {
+    return false;
+  }
+}
+
+export function isAnyCustomer() {
+  return (customersList[1].length + customersList[2].length + customersList[3].length + customersList[4].length);
+}
+
+export function drawCustomers(context) {
+  let customer;
+  let ret = 0;
+  let customerArrayCopy = null;
+  let copyFlag = false;
+
+  customerXPos = [-1, -1, -1, -1, -1];
+  maxPos = [0, 0, 0, 0, 0];
+
+  for (let rowCount = 1; rowCount < 5; rowCount++) {
+    customerArrayCopy = customersList[rowCount].slice();
+
+    for (let i = customersList[rowCount].length; i--;) {
+      customer = customersList[rowCount][i];
+
+      if ((!oneReachEndOfRow) && (currentGameState === STATE_PLAY)) {
+        customer.update();
+
+        if (customer.isOut) {
+          customerArrayCopy.splice(i, 1);
+          copyFlag = true;
+          playSound(OUT_DOOR);
+          LevelManager.addScore(LevelManager.SCORE_CUSTOMER);
+          continue;
+        } else if ((customer.xPos > maxPos[rowCount]) && (customer.state === customer.STATE_WAIT)) {
+          customerXPos[rowCount] = i;
+          maxPos[rowCount] = customer.xPos;
+        }
+      }
+      if ((customer.EndOfRow) && (oneReachEndOfRow === false)) {
+        oneReachEndOfRow = true;
+        ret = rowCount;
+      }
+      context.drawImage(spriteImage,
+        customer.sprite, CUSTOMER_Y_OFFSET[customer.type], spriteWidth, spriteHeight,
+        customer.xPos, customer.yPos, spriteWidth, spriteHeight);
+
+      if (customer.state !== customer.STATE_WAIT) {
+        context.drawImage(spriteImage,
+          customer.sprite2, CUSTOMER_Y_OFFSET[customer.type], spriteWidth, spriteHeight,
+          customer.xPos + 32, customer.yPos2, spriteWidth, spriteHeight);
+      }
+    }
+
+    if (copyFlag) {
+      customersList[rowCount] = customerArrayCopy.slice();
+    }
+  }
+  drawBonus(context);
+
+  return ret;
+}
 
 function OneCustomer(row, defaultXPos, movingPattern, type) {
   return {
     STATE_WAIT: 0,
     STATE_CATCH: 1,
     STATE_DRINK: 2,
-    STEP: Customers.STEP,
+    STEP: CUSTOMER_STEP,
     state: 0,
     type,
     sprite: 0,
@@ -225,8 +221,8 @@ function OneCustomer(row, defaultXPos, movingPattern, type) {
             this.fpsCount = 0;
             this.animationCounter = 0;
             this.state = this.STATE_DRINK;
-            this.sprite = Customers.DRINKING_BEER_1 * 32;
-            this.sprite2 = Customers.DRINKING_BEER_2 * 32;
+            this.sprite = DRINKING_BEER_1 * 32;
+            this.sprite2 = DRINKING_BEER_2 * 32;
             this.yPos2 = this.yPos;
           }
           break;
@@ -240,8 +236,8 @@ function OneCustomer(row, defaultXPos, movingPattern, type) {
             this.animationCounter = -1;
             this.fpsCount = 0;
             this.sprite = this.movingPattern[0] * 32;
-            addBeerGlass(this.row, this.xPos + Customers.spriteWidth, false);
-            Customers.checkBonus(this.row, this.xPos);
+            addBeerGlass(this.row, this.xPos + spriteWidth, false);
+            checkBonus(this.row, this.xPos);
           }
           break;
         default:
@@ -252,8 +248,8 @@ function OneCustomer(row, defaultXPos, movingPattern, type) {
     catchBeer() {
       this.newXPos = this.xPos - (((this.rightBound - this.leftBound) / 5) * 2);
       this.state = this.STATE_CATCH;
-      this.sprite = Customers.HOLDING_BEER_1 * 32;
-      this.sprite2 = Customers.HOLDING_BEER_2 * 32;
+      this.sprite = HOLDING_BEER_1 * 32;
+      this.sprite2 = HOLDING_BEER_2 * 32;
       this.yPos2 = this.yPos + 8;
     }
   };

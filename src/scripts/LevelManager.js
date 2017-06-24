@@ -1,7 +1,7 @@
 import {getImageResource, POP_OUT, GAME_TITLE, PREGAME, LEVEL_1, FONT, MISC} from './ResourceManager';
 import {STATE_PLAY, currentGameState} from './Main';
 import {playSound} from './SoundManager';
-import {Customers} from './Customers';
+import {addCustomer, isAnyCustomer, CUSTOMER_GREEN_HAT_COWBOY, CUSTOMER_WOMAN, CUSTOMER_BLACK_GUY, CUSTOMER_GRAY_HAT_COWBOY, MAX_CUSTOMER_TYPE} from './Customers';
 
 export const LevelManager = {
   MAX_LIFE: 3,
@@ -59,23 +59,23 @@ export const LevelManager = {
 
   addCustomer() {
     if (currentGameState === STATE_PLAY) {
-      if (Customers.isAnyCustomer() < 2) {
+      if (isAnyCustomer() < 2) {
         if (this.wave++ === (this.difficulty * 2)) {
           this.difficulty++;
         }
 
         for (let i = 1; i <= this.difficulty; i++) {
-          Customers.add(1, i, Customers.CUSTOMER_GREEN_HAT_COWBOY);
-          Customers.add(2, i, Customers.CUSTOMER_WOMAN);
-          Customers.add(3, i, Customers.CUSTOMER_BLACK_GUY);
-          Customers.add(4, i, Customers.CUSTOMER_GRAY_HAT_COWBOY);
+          addCustomer(1, i, CUSTOMER_GREEN_HAT_COWBOY);
+          addCustomer(2, i, CUSTOMER_WOMAN);
+          addCustomer(3, i, CUSTOMER_BLACK_GUY);
+          addCustomer(4, i, CUSTOMER_GRAY_HAT_COWBOY);
           playSound(POP_OUT);
         }
       } else {
         const randomRow = Math.floor(Math.random() * 5);
         if ((randomRow !== 0) && (randomRow !== this.lastRow)) {
-          const randomCustomerType = Math.floor(Math.random() * (Customers.MAX_CUSTOMER_TYPE));
-          Customers.add(randomRow, 1, randomCustomerType);
+          const randomCustomerType = Math.floor(Math.random() * (MAX_CUSTOMER_TYPE));
+          addCustomer(randomRow, 1, randomCustomerType);
           playSound(POP_OUT);
           this.lastRow = randomRow;
         }
@@ -149,10 +149,10 @@ export const LevelManager = {
 
   reset() {
     for (let i = 1; i <= this.difficulty; i++) {
-      Customers.add(1, i, Customers.CUSTOMER_GREEN_HAT_COWBOY);
-      Customers.add(2, i, Customers.CUSTOMER_WOMAN);
-      Customers.add(3, i, Customers.CUSTOMER_BLACK_GUY);
-      Customers.add(4, i, Customers.CUSTOMER_GRAY_HAT_COWBOY);
+      addCustomer(1, i, CUSTOMER_GREEN_HAT_COWBOY);
+      addCustomer(2, i, CUSTOMER_WOMAN);
+      addCustomer(3, i, CUSTOMER_BLACK_GUY);
+      addCustomer(4, i, CUSTOMER_GRAY_HAT_COWBOY);
     }
     this.lastRow = -1;
     setTimeout(() => LevelManager.addCustomer(), this.timeStep);

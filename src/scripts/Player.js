@@ -1,7 +1,7 @@
 import {getImageResource, BARMAN_ZIP_UP, BARMAN_ZIP_DOWN, MUG_FILL1, MUG_FILL2, FULL_MUG, THROW_MUG, BARMAN} from './ResourceManager';
 import {playSound} from './SoundManager';
 import {addBeerGlass} from './BeerGlass';
-import {Customers} from './Customers';
+import {checkBonusCollision} from './Customers';
 
 export const Player = {
   STEP: 16,
@@ -231,7 +231,7 @@ export const Player = {
           if (this.legState > this.RUN_DOWN_4) {
             this.legState = this.RUN_DOWN_1;
           }
-          Customers.checkBonusCollision(this.currentRow, this.playerXPos);
+          checkBonusCollision(this.currentRow, this.playerXPos);
         }
         this.playerGoLeft = true;
         break;

@@ -1,7 +1,7 @@
 import {getImageResource, BEER_GLASS, GRAB_MUG} from './ResourceManager';
 import {LevelManager} from './LevelManager';
 import {playSound} from './SoundManager';
-import {Customers} from './Customers';
+import {getFirstCustomerPos, beerCollisionDetected, CUSTOMER_STEP} from './Customers';
 import {Player} from './Player';
 
 let glasses = [];
@@ -39,9 +39,9 @@ const SPRITE_BROKEN = 128;
 const STEP = 4;
 
 function checkCustomerCollision(glass, row) {
-  const customerPos = Customers.getFirstCustomerPos(row) + 24;
+  const customerPos = getFirstCustomerPos(row) + 24;
   if (glass.xPos <= customerPos) {
-    return Customers.beerCollisionDetected(row);
+    return beerCollisionDetected(row);
   }
   return false;
 }
@@ -81,7 +81,7 @@ function Glass(row, defaultXPos, full) {
       } else {
         this.sprite = SPRITE_EMPTY_1;
         if (this.xPos < this.rightBound) {
-          this.xPos += Customers.STEP;
+          this.xPos += CUSTOMER_STEP;
         } else {
           this.broken = true;
           this.sprite = SPRITE_FALLING;
