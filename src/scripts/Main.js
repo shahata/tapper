@@ -3,7 +3,7 @@ import {initFrameBuffer, drawFrameBuffer} from './System';
 import {playSound, stopSound} from './SoundManager';
 import {LevelManager} from './LevelManager';
 import {initBeerGlasses, resetBeerGlasses, drawBeerGlasses, updateBeerGlasses} from './BeerGlass';
-import {initCustomers, resetCustomers, drawCustomers} from './Customers';
+import {initCustomers, resetCustomers, drawCustomers, updateCustomers} from './Customers';
 import {Player} from './Player';
 
 export let currentGameState;
@@ -65,13 +65,12 @@ function onUpdateFrame() {
   } else if (currentGameState === STATE_READY) {
     LevelManager.displayReadyToPlay(frameBuffer);
   } else {
-    if (currentGameState === STATE_PLAY && updateBeerGlasses()) {
+    if (currentGameState === STATE_PLAY && (updateBeerGlasses() || updateCustomers())) {
       lost();
     }
     LevelManager.drawLevelBackground(frameBuffer);
-    if (drawCustomers(frameBuffer) !== 0 || drawBeerGlasses(frameBuffer)) {
-      lost();
-    }
+    drawBeerGlasses(frameBuffer);
+    drawCustomers(frameBuffer);
     keyPressAllowed = Player.draw(frameBuffer);
     LevelManager.drawGameHUD(frameBuffer);
     if (currentGameState === STATE_GAME_OVER) {

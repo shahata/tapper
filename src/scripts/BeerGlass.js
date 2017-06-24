@@ -1,11 +1,11 @@
 import {getImageResource, BEER_GLASS, GRAB_MUG} from './ResourceManager';
 import {LevelManager} from './LevelManager';
 import {playSound} from './SoundManager';
-import {getFirstCustomerPos, beerCollisionDetected, CUSTOMER_STEP} from './Customers';
+import {beerCollisionDetected, CUSTOMER_STEP} from './Customers';
 import {Player} from './Player';
 
-let glasses = [];
-let spriteImage = null;
+let glasses;
+let spriteImage;
 
 export function initBeerGlasses() {
   spriteImage = getImageResource(BEER_GLASS);
@@ -36,14 +36,11 @@ const SPRITE_FULL_2 = 32;
 const SPRITE_EMPTY_1 = 64;
 const SPRITE_FALLING = 96;
 const SPRITE_BROKEN = 128;
+const FPS_MAX = 30;
 const STEP = 4;
 
 function checkCustomerCollision(glass, row) {
-  const customerPos = getFirstCustomerPos(row) + 24;
-  if (glass.xPos <= customerPos) {
-    return beerCollisionDetected(row);
-  }
-  return false;
+  return beerCollisionDetected(row, glass.xPos - 24);
 }
 
 function checkPlayerCollision(glass, row) {
@@ -63,12 +60,11 @@ function Glass(row, defaultXPos, full) {
     leftBound: LevelManager.rowLBound[row] - STEP,
     rightBound: LevelManager.rowRBound[row] + (spriteWidth / 2),
     fpsCount: 0,
-    fpsMax: 60 / 2,
     broken: false,
 
     update() {
       if (full) {
-        if (this.fpsCount++ > this.fpsMax) {
+        if (this.fpsCount++ > FPS_MAX) {
           this.sprite = this.sprite === SPRITE_FULL_1 ? SPRITE_FULL_2 : SPRITE_FULL_1;
           this.fpsCount = 0;
         }
