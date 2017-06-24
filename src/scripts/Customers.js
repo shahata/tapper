@@ -45,7 +45,7 @@ export function resetCustomers() {
 }
 
 export function addCustomer(row, pos, type) {
-  const customer = new OneCustomer(row, LevelManager.rowLBound[row], movingPatternArray[row], type);
+  const customer = new OneCustomer(row, type);
   customer.xPos += (pos - 1) * spriteWidth;
   customers.push(customer);
 }
@@ -109,7 +109,7 @@ export function updateCustomers() {
     }
   });
   customers = customers.filter(customer => !customer.isOut);
-  return customers.some(customer => customer.EndOfRow);
+  return customers.some(customer => customer.endOfRow);
 }
 
 
@@ -118,7 +118,7 @@ export function drawCustomers(context) {
   drawBonus(context);
 }
 
-function OneCustomer(row, defaultXPos, movingPattern, type) {
+function OneCustomer(row, type) {
   return {
     STATE_WAIT: 0,
     STATE_CATCH: 1,
@@ -128,9 +128,9 @@ function OneCustomer(row, defaultXPos, movingPattern, type) {
     type,
     sprite: 0,
     sprite2: 0,
-    movingPattern,
+    movingPattern: movingPatternArray[row],
     animationCounter: -1,
-    xPos: defaultXPos,
+    xPos: LevelManager.rowLBound[row],
     yPos: LevelManager.rowYPos[row],
     yPos2: LevelManager.rowYPos[row],
     row,
@@ -139,7 +139,7 @@ function OneCustomer(row, defaultXPos, movingPattern, type) {
     fpsCount: 0,
     fpsMax: 60 / 8,
     newXPos: 0,
-    EndOfRow: false,
+    endOfRow: false,
     isOut: false,
 
     update() {
@@ -157,7 +157,7 @@ function OneCustomer(row, defaultXPos, movingPattern, type) {
             if (this.xPos < this.rightBound) {
               this.xPos += this.STEP;
             } else {
-              this.EndOfRow = true;
+              this.endOfRow = true;
             }
           }
           break;
