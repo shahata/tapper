@@ -4,7 +4,7 @@ import {playSound, stopSound} from './SoundManager';
 import {initLevelManager, resetLevelManager, lifeLost, isAlive, newGame, displayGameTitle, displayReadyToPlay, displayGameOver, drawLevelBackground, drawGameHUD} from './LevelManager';
 import {initBeerGlasses, resetBeerGlasses, drawBeerGlasses, updateBeerGlasses} from './BeerGlass';
 import {initCustomers, resetCustomers, drawCustomers, updateCustomers} from './Customers';
-import {initPlayer, resetPlayer, drawPlayer, movePlayer, playerLost, UP, DOWN, LEFT, RIGHT, FIRE, NONE} from './Player';
+import {initPlayer, resetPlayer, drawPlayer, moveUp, moveDown, moveLeft, moveRight, fire, moveNone, playerLost} from './Player';
 
 export let currentGameState;
 export const STATE_PLAY = 0;
@@ -84,10 +84,10 @@ function onUpdateFrame() {
 function onKeyPress(e) {
   let preventEvent = false;
   if (keyPressAllowed) {
-    const direction = {38: UP, 40: DOWN, 37: LEFT, 39: RIGHT, 32: FIRE};
+    const direction = {38: moveUp, 40: moveDown, 37: moveLeft, 39: moveRight, 32: fire};
     if (e.keyCode in direction) {
       if (currentGameState === STATE_PLAY) {
-        movePlayer(direction[e.keyCode]);
+        direction[e.keyCode]();
       }
       preventEvent = true;
     } else if (e.keyCode === 13) { // Press ENTER
@@ -118,7 +118,7 @@ function onKeyRelease(e) {
       case 39: // RIGHT arrow
       case 32: // SPACE
         if (currentGameState === STATE_PLAY) {
-          movePlayer(NONE);
+          moveNone();
         }
         preventEvent = true;
         break;

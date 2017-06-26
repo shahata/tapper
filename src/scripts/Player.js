@@ -9,6 +9,9 @@ export const UP = 2;
 export const DOWN = 3;
 export const FIRE = 4;
 export const NONE = 6;
+export let currentRow = 2;
+export let playerXPos = 336;
+
 const STEP = 16;
 const STAND_L1 = 0;
 const STAND_L2 = 1;
@@ -35,27 +38,25 @@ const GO1 = 4;
 const GO4 = 7;
 const spriteWidth = 32;
 const spriteHeight = 32;
+const rowXPos = [null, 336, 368, 400, 432];
+const rowYPos = [null, 96, 192, 288, 384];
+const rowLBound = [null, 128, 96, 64, 32];
+const rowRBound = [null, 336, 368, 400, 432];
+const legAnimationTiming = 20;
 let spriteImage = null;
 let goState = 0;
 let legState = 0;
 let tapperState = 0;
 let servingCounter = 0;
-const rowXPos = [null, 336, 368, 400, 432];
-const rowYPos = [null, 96, 192, 288, 384];
-const rowLBound = [null, 128, 96, 64, 32];
-const rowRBound = [null, 336, 368, 400, 432];
 let playerAction = null;
 let gamePlay = false;
-export let currentRow = 2;
 let lastRow = 0;
 let lastPlayerXPos = null;
 let playerGoLeft = true;
 let playerRunning = false;
 let tapperServing = false;
-export let playerXPos = 336;
 let playerYPos = 192;
 let fpsCount = 0;
-const legAnimationTiming = 20;
 
 export function initPlayer() {
   spriteImage = getImageResource(BARMAN);
@@ -186,113 +187,116 @@ export function drawPlayer(context) {
   return true;
 }
 
-export function movePlayer(direction) {
+export function moveUp() {
   playerRunning = false;
-  switch (direction) {
-    case UP:
+  tapperServing = false;
+  lastRow = currentRow;
+  currentRow -= 1;
+  if (currentRow === 0) {
+    currentRow = 4;
+  }
+  goState = GO1;
+  lastPlayerXPos = playerXPos;
+  playerXPos = rowXPos[currentRow];
+  playerYPos = rowYPos[currentRow];
+  playSound(BARMAN_ZIP_UP);
+}
+
+export function moveDown() {
+  playerRunning = false;
+  tapperServing = false;
+  lastRow = currentRow;
+  currentRow += 1;
+  if (currentRow === 5) {
+    currentRow = 1;
+  }
+  goState = GO1;
+  lastPlayerXPos = playerXPos;
+  playerXPos = rowXPos[currentRow];
+  playerYPos = rowYPos[currentRow];
+  playSound(BARMAN_ZIP_DOWN);
+}
+export function moveLeft() {
+  playerRunning = false;
+  tapperServing = false;
+  if ((playerGoLeft) && (playerXPos > (rowLBound[currentRow]))) {
+    playerXPos -= STEP;
+    playerRunning = true;
+    playerAction = RUN_UP_L1;
+    legState += 2;
+    if (legState > RUN_DOWN_4) {
+      legState = RUN_DOWN_1;
+    }
+    checkBonusCollision(currentRow, playerXPos);
+  }
+  playerGoLeft = true;
+}
+
+export function moveRight() {
+  playerRunning = false;
+  tapperServing = false;
+  if ((!playerGoLeft) && (playerXPos < (rowRBound[currentRow]))) {
+    playerXPos += STEP;
+    playerRunning = true;
+    playerAction = RUN_UP_R1;
+    legState += 2;
+    if (legState > RUN_DOWN_4) {
+      legState = RUN_DOWN_1;
+    }
+  }
+  playerGoLeft = false;
+}
+
+export function fire() {
+  playerRunning = false;
+  if (playerXPos !== rowRBound[currentRow]) {
+    lastRow = currentRow;
+    goState = GO1;
+    lastPlayerXPos = playerXPos;
+    playerXPos = rowXPos[currentRow];
+  }
+  if (tapperServing === false) {
+    servingCounter = 0;
+  }
+  tapperServing = true;
+  tapperState = TAPPER_3;
+  if (servingCounter < SERVING_MAX) {
+    servingCounter += 1;
+    switch (servingCounter) {
+      case 1 :
+        playSound(MUG_FILL1);
+        break;
+      case 2 :
+      case 3 :
+        playSound(MUG_FILL2);
+        break;
+      case SERVING_MAX :
+        playSound(FULL_MUG);
+        break;
+      default:
+        break;
+    }
+  }
+}
+
+export function moveNone() {
+  playerRunning = false;
+  if (tapperServing) {
+    tapperState = TAPPER_2;
+    if (servingCounter === SERVING_MAX) {
+      servingCounter = 0;
+      addBeerGlass(currentRow, playerXPos - spriteWidth, true);
       tapperServing = false;
-      lastRow = currentRow;
-      currentRow -= 1;
-      if (currentRow === 0) {
-        currentRow = 4;
-      }
-      goState = GO1;
-      lastPlayerXPos = playerXPos;
-      playerXPos = rowXPos[currentRow];
-      playerYPos = rowYPos[currentRow];
-      playSound(BARMAN_ZIP_UP);
-      break;
-    case DOWN:
-      tapperServing = false;
-      lastRow = currentRow;
-      currentRow += 1;
-      if (currentRow === 5) {
-        currentRow = 1;
-      }
-      goState = GO1;
-      lastPlayerXPos = playerXPos;
-      playerXPos = rowXPos[currentRow];
-      playerYPos = rowYPos[currentRow];
-      playSound(BARMAN_ZIP_DOWN);
-      break;
-    case LEFT:
-      tapperServing = false;
-      if ((playerGoLeft) && (playerXPos > (rowLBound[currentRow]))) {
-        playerXPos -= STEP;
-        playerRunning = true;
-        playerAction = RUN_UP_L1;
-        legState += 2;
-        if (legState > RUN_DOWN_4) {
-          legState = RUN_DOWN_1;
-        }
-        checkBonusCollision(currentRow, playerXPos);
-      }
-      playerGoLeft = true;
-      break;
-    case RIGHT:
-      tapperServing = false;
-      if ((!playerGoLeft) && (playerXPos < (rowRBound[currentRow]))) {
-        playerXPos += STEP;
-        playerRunning = true;
-        playerAction = RUN_UP_R1;
-        legState += 2;
-        if (legState > RUN_DOWN_4) {
-          legState = RUN_DOWN_1;
-        }
-      }
       playerGoLeft = false;
-      break;
-    case FIRE:
-      if (playerXPos !== rowRBound[currentRow]) {
-        lastRow = currentRow;
-        goState = GO1;
-        lastPlayerXPos = playerXPos;
-        playerXPos = rowXPos[currentRow];
-      }
-      if (tapperServing === false) {
-        servingCounter = 0;
-      }
-      tapperServing = true;
-      tapperState = TAPPER_3;
-      if (servingCounter < SERVING_MAX) {
-        servingCounter += 1;
-        switch (servingCounter) {
-          case 1 :
-            playSound(MUG_FILL1);
-            break;
-          case 2 :
-          case 3 :
-            playSound(MUG_FILL2);
-            break;
-          case SERVING_MAX :
-            playSound(FULL_MUG);
-            break;
-          default:
-            break;
-        }
-      }
-      break;
-    case NONE:
-      if (tapperServing) {
-        tapperState = TAPPER_2;
-        if (servingCounter === SERVING_MAX) {
-          servingCounter = 0;
-          addBeerGlass(currentRow, playerXPos - spriteWidth, true);
-          tapperServing = false;
-          playerGoLeft = false;
-          playerAction = STAND_R1;
-          playSound(THROW_MUG);
-        }
-      } else {
-        if (playerGoLeft) {
-          playerAction = STAND_L1;
-        } else {
-          playerAction = STAND_R1;
-        }
-        legState = RUN_DOWN_1 - 2;
-      }
-      break;
-    default:
-      break;
+      playerAction = STAND_R1;
+      playSound(THROW_MUG);
+    }
+  } else {
+    if (playerGoLeft) {
+      playerAction = STAND_L1;
+    } else {
+      playerAction = STAND_R1;
+    }
+    legState = RUN_DOWN_1 - 2;
   }
 }
