@@ -1,7 +1,7 @@
 import {loadAllResources, GET_READY_TO_SERVE, OH_SUSANNA, YOU_LOSE, LAUGHING} from './ResourceManager';
 import {initFrameBuffer, drawFrameBuffer} from './System';
 import {playSound, stopSound} from './SoundManager';
-import {LevelManager} from './LevelManager';
+import {initLevelManager, resetLevelManager, lifeLost, isAlive, newGame, displayGameTitle, displayReadyToPlay, displayGameOver, drawLevelBackground, drawGameHUD} from './LevelManager';
 import {initBeerGlasses, resetBeerGlasses, drawBeerGlasses, updateBeerGlasses} from './BeerGlass';
 import {initCustomers, resetCustomers, drawCustomers, updateCustomers} from './Customers';
 import {Player} from './Player';
@@ -22,7 +22,7 @@ export function initGame() {
 }
 
 function loaded() {
-  LevelManager.init();
+  initLevelManager();
   Player.init();
   initBeerGlasses();
   initCustomers();
@@ -37,7 +37,7 @@ function reset() {
   Player.reset();
   resetBeerGlasses();
   resetCustomers();
-  LevelManager.reset();
+  resetLevelManager();
   playSound(GET_READY_TO_SERVE);
   setTimeout(() => {
     currentGameState = STATE_PLAY;
@@ -46,10 +46,10 @@ function reset() {
 }
 
 function lost() {
-  LevelManager.lifeLost();
+  lifeLost();
   Player.lost();
   stopSound(OH_SUSANNA);
-  if (LevelManager.life <= 0) {
+  if (!isAlive()) {
     currentGameState = STATE_GAME_OVER;
     playSound(YOU_LOSE);
   } else {
@@ -61,20 +61,20 @@ function lost() {
 
 function onUpdateFrame() {
   if (currentGameState === STATE_MENU) {
-    LevelManager.displayGameTitle(frameBuffer);
+    displayGameTitle(frameBuffer);
   } else if (currentGameState === STATE_READY) {
-    LevelManager.displayReadyToPlay(frameBuffer);
+    displayReadyToPlay(frameBuffer);
   } else {
     if (currentGameState === STATE_PLAY && (updateBeerGlasses() || updateCustomers())) {
       lost();
     }
-    LevelManager.drawLevelBackground(frameBuffer);
+    drawLevelBackground(frameBuffer);
     drawBeerGlasses(frameBuffer);
     drawCustomers(frameBuffer);
     keyPressAllowed = Player.draw(frameBuffer);
-    LevelManager.drawGameHUD(frameBuffer);
+    drawGameHUD(frameBuffer);
     if (currentGameState === STATE_GAME_OVER) {
-      LevelManager.displayGameOver(frameBuffer);
+      displayGameOver(frameBuffer);
     }
   }
   drawFrameBuffer();
@@ -92,7 +92,7 @@ function onKeyPress(e) {
       preventEvent = true;
     } else if (e.keyCode === 13) { // Press ENTER
       if (currentGameState === STATE_MENU) {
-        LevelManager.newGame();
+        newGame();
         reset();
       } else if (currentGameState === STATE_GAME_OVER) {
         currentGameState = STATE_MENU;

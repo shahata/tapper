@@ -1,5 +1,5 @@
 import {getImageResource, TIP_APPEAR, COLLECT_TIP, OUT_DOOR, CUSTOMERS, BEER_GLASS} from './ResourceManager';
-import {LevelManager} from './LevelManager';
+import {addScore, rowYPos, rowLBound, rowRBound, SCORE_BONUS, SCORE_CUSTOMER} from './LevelManager';
 import {playSound} from './SoundManager';
 import {addBeerGlass} from './BeerGlass';
 
@@ -52,13 +52,13 @@ export function addCustomer(row, pos, type) {
 
 function checkBonus(row, xPos) {
   if ((!bonus.visible) && (bonus.timeoutReached)) {
-    if (xPos < (LevelManager.rowLBound[row] + ((LevelManager.rowRBound[row] - LevelManager.rowLBound[row]) / 3))) {
+    if (xPos < (rowLBound[row] + ((rowRBound[row] - rowLBound[row]) / 3))) {
       const randomRow = Math.floor(Math.random() * 6);
       if (randomRow === row) {
         bonus.visible = true;
         bonus.row = row;
         bonus.xPos = xPos;
-        bonus.yPos = LevelManager.rowYPos[row] + 16;
+        bonus.yPos = rowYPos[row] + 16;
         bonus.timeoutReached = false;
         setTimeout(() => {
           bonus.visible = false;
@@ -73,7 +73,7 @@ function checkBonus(row, xPos) {
 export function checkBonusCollision(row, xPos) {
   if ((bonus.visible) && (bonus.row === row) && (xPos <= bonus.xPos + spriteWidth)) {
     bonus.visible = false;
-    LevelManager.addScore(LevelManager.SCORE_BONUS);
+    addScore(SCORE_BONUS);
     playSound(COLLECT_TIP);
   }
 }
@@ -105,7 +105,7 @@ export function updateCustomers() {
     customer.update();
     if (customer.isOut) {
       playSound(OUT_DOOR);
-      LevelManager.addScore(LevelManager.SCORE_CUSTOMER);
+      addScore(SCORE_CUSTOMER);
     }
   });
   customers = customers.filter(customer => !customer.isOut);
@@ -130,12 +130,12 @@ function OneCustomer(row, type) {
     sprite2: 0,
     movingPattern: movingPatternArray[row],
     animationCounter: -1,
-    xPos: LevelManager.rowLBound[row],
-    yPos: LevelManager.rowYPos[row],
-    yPos2: LevelManager.rowYPos[row],
+    xPos: rowLBound[row],
+    yPos: rowYPos[row],
+    yPos2: rowYPos[row],
     row,
-    leftBound: LevelManager.rowLBound[row],
-    rightBound: LevelManager.rowRBound[row],
+    leftBound: rowLBound[row],
+    rightBound: rowRBound[row],
     fpsCount: 0,
     fpsMax: 60 / 8,
     newXPos: 0,

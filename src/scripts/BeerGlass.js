@@ -1,5 +1,5 @@
 import {getImageResource, BEER_GLASS, GRAB_MUG} from './ResourceManager';
-import {LevelManager} from './LevelManager';
+import {addScore, rowYPos, rowLBound, rowRBound, SCORE_EMPTY_BEER} from './LevelManager';
 import {playSound} from './SoundManager';
 import {beerCollisionDetected, CUSTOMER_STEP} from './Customers';
 import {Player} from './Player';
@@ -46,7 +46,7 @@ function checkCustomerCollision(glass, row) {
 function checkPlayerCollision(glass, row) {
   if ((Player.currentRow === row) && (glass.xPos + spriteWidth >= Player.playerXPos)) {
     playSound(GRAB_MUG);
-    LevelManager.addScore(LevelManager.SCORE_EMPTY_BEER);
+    addScore(SCORE_EMPTY_BEER);
     return true;
   }
   return false;
@@ -56,9 +56,9 @@ function Glass(row, defaultXPos, full) {
   return {
     sprite: SPRITE_FULL_1,
     xPos: defaultXPos,
-    yPos: LevelManager.rowYPos[row] + 8,
-    leftBound: LevelManager.rowLBound[row] - STEP,
-    rightBound: LevelManager.rowRBound[row] + (spriteWidth / 2),
+    yPos: rowYPos[row] + 8,
+    leftBound: rowLBound[row] - STEP,
+    rightBound: rowRBound[row] + (spriteWidth / 2),
     fpsCount: 0,
     broken: false,
 
