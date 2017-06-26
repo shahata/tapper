@@ -5,7 +5,7 @@ let gameWidthZoom = 0;
 let gameHeightZoom = 0;
 let context2D = null;
 
-export function initFrameBuffer(wrapperId, gameWidth, gameHeight, doubleBuffer, zoomFactor) {
+export function initFrameBuffer(gameWidth, gameHeight, doubleBuffer, zoomFactor) {
   doubleBuffering = doubleBuffer;
   zoomFactor = doubleBuffer ? zoomFactor : 1;
   gameWidthZoom = gameWidth * zoomFactor;
@@ -16,7 +16,7 @@ export function initFrameBuffer(wrapperId, gameWidth, gameHeight, doubleBuffer, 
   canvas.setAttribute('height', gameHeightZoom + 'px');
   canvas.setAttribute('border', 1 + 'px solid black');
   canvas.setAttribute('style', 1 + 'background: #fff');
-  document.getElementById(wrapperId).appendChild(canvas);
+  document.getElementById('tapper').appendChild(canvas);
   context2D = canvas.getContext('2d');
 
   if (doubleBuffer) {
