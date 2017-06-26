@@ -2,7 +2,7 @@ import {getImageResource, BEER_GLASS, GRAB_MUG} from './ResourceManager';
 import {addScore, rowYPos, rowLBound, rowRBound, SCORE_EMPTY_BEER} from './LevelManager';
 import {playSound} from './SoundManager';
 import {beerCollisionDetected, CUSTOMER_STEP} from './Customers';
-import {Player} from './Player';
+import {currentRow, playerXPos} from './Player';
 
 let glasses;
 let spriteImage;
@@ -44,7 +44,7 @@ function checkCustomerCollision(glass, row) {
 }
 
 function checkPlayerCollision(glass, row) {
-  if ((Player.currentRow === row) && (glass.xPos + spriteWidth >= Player.playerXPos)) {
+  if (currentRow === row && glass.xPos + spriteWidth >= playerXPos) {
     playSound(GRAB_MUG);
     addScore(SCORE_EMPTY_BEER);
     return true;

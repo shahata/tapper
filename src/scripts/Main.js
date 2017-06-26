@@ -4,7 +4,7 @@ import {playSound, stopSound} from './SoundManager';
 import {initLevelManager, resetLevelManager, lifeLost, isAlive, newGame, displayGameTitle, displayReadyToPlay, displayGameOver, drawLevelBackground, drawGameHUD} from './LevelManager';
 import {initBeerGlasses, resetBeerGlasses, drawBeerGlasses, updateBeerGlasses} from './BeerGlass';
 import {initCustomers, resetCustomers, drawCustomers, updateCustomers} from './Customers';
-import {Player} from './Player';
+import {initPlayer, resetPlayer, drawPlayer, movePlayer, playerLost, UP, DOWN, LEFT, RIGHT, FIRE, NONE} from './Player';
 
 export let currentGameState;
 export const STATE_PLAY = 0;
@@ -23,7 +23,7 @@ export function initGame() {
 
 function loaded() {
   initLevelManager();
-  Player.init();
+  initPlayer();
   initBeerGlasses();
   initCustomers();
   document.onkeydown = onKeyPress;
@@ -34,7 +34,7 @@ function loaded() {
 
 function reset() {
   currentGameState = STATE_READY;
-  Player.reset();
+  resetPlayer();
   resetBeerGlasses();
   resetCustomers();
   resetLevelManager();
@@ -47,7 +47,7 @@ function reset() {
 
 function lost() {
   lifeLost();
-  Player.lost();
+  playerLost();
   stopSound(OH_SUSANNA);
   if (!isAlive()) {
     currentGameState = STATE_GAME_OVER;
@@ -71,7 +71,7 @@ function onUpdateFrame() {
     drawLevelBackground(frameBuffer);
     drawBeerGlasses(frameBuffer);
     drawCustomers(frameBuffer);
-    keyPressAllowed = Player.draw(frameBuffer);
+    keyPressAllowed = drawPlayer(frameBuffer);
     drawGameHUD(frameBuffer);
     if (currentGameState === STATE_GAME_OVER) {
       displayGameOver(frameBuffer);
@@ -84,10 +84,10 @@ function onUpdateFrame() {
 function onKeyPress(e) {
   let preventEvent = false;
   if (keyPressAllowed) {
-    const direction = {38: Player.UP, 40: Player.DOWN, 37: Player.LEFT, 39: Player.RIGHT, 32: Player.FIRE};
+    const direction = {38: UP, 40: DOWN, 37: LEFT, 39: RIGHT, 32: FIRE};
     if (e.keyCode in direction) {
       if (currentGameState === STATE_PLAY) {
-        Player.move(direction[e.keyCode]);
+        movePlayer(direction[e.keyCode]);
       }
       preventEvent = true;
     } else if (e.keyCode === 13) { // Press ENTER
@@ -118,7 +118,7 @@ function onKeyRelease(e) {
       case 39: // RIGHT arrow
       case 32: // SPACE
         if (currentGameState === STATE_PLAY) {
-          Player.move(Player.NONE);
+          movePlayer(NONE);
         }
         preventEvent = true;
         break;
