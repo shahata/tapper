@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Mini Tapper JS</title>
+  <link rel="stylesheet" type="text/css" media="screen"
+ href="theme/styles.css">
+  <link rel="stylesheet" type="text/css" media="screen"
+ href="theme/colourtag-theme-default.css">
+  <link rel="stylesheet" type="text/css" media="screen"
+ href="theme/700.css">
+  <script type="text/javascript">
+		var _gaq = _gaq || [];
+		_gaq.push(['_setAccount', 'UA-13050059-2']);
+		_gaq.push(['_trackPageview']);
+
+		(function() {
+			var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+			ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+			var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+		})();
+		</script>
+</head>
+<body>
+<div id="bodyGrad"> <img class="pngfix"
+ src="theme/images/body_grad.png" alt=""
+ style="width: 3000px; height: 400px;">
+</div>
+<div id="container"><!-- Start container -->
+<div id="pageHeader"><!-- Start page header -->
+<div id="grad"><img class="pngfix"
+ src="theme/images/header_top_grad.png" alt=""
+ style="width: 3000px; height: 72px;"></div>
+<h1>Mini Tapper JS <small><small><small><small><small><small>(v1.1b)</small></small></small></small></small></small></h1>
+<h2><br>
+</h2>
+<h2>A Javascript Tapper remake !</h2>
+<img class="pngfix" src="theme/images/webkit.png" alt="" =""> </div>
+<!-- End page header -->
+<div class="clearer"></div>
+<div id="contentContainer"><!-- Start main content wrapper -->
+<div id="content"><!-- Start content --> Mini Tapper is a Javascript
+"mini" remake of the well known <a
+ href="http://en.wikipedia.org/wiki/Tapper">Root Beer Tapper</a> by
+Bally Midway. It only features the first level but with a slightly
+different gameplay more like a "survival mode", as here the goal is to
+serve your beloved customers as long as possible, with the difficulty
+(top rigth counter) increasing over the time, and more and more
+customers entering the bar ! And of course, you also have to catch the
+empty mugs and maybe grab some tips if you can. <br>
+<br>
+This is my first game in Javascript (even my first time using
+Javascript) and I mainly developed this game as a learning exercise for
+the new HTML5 Canva Element, and everything is pure HMTL5 including for
+the audio part. And although I could have done it better, I feel
+satisfied and most of all : I had so so so much fun doing it :) <br>
+I Also take the opportunity to thank my friend <a
+ href="http://www.megidish.net/">Gil megidish</a>, for showing me the
+way of HMTL5, as without him I would still be compiling my games :) <br>
+<br>
+A recent browser (fully supporting HTML5) is of course highly recommended to fully enjoy the game.<br>
+<br>
+I hope you'll like it, and that it will bring all that retro fun back
+to your memory :) <br>
+<br>
+<center>
+<div id="tapperJS" style="margin-bottom: 20px;"></div>
+<script type="text/javascript" src="System.js"></script>
+<script type="text/javascript" src="SoundMngr.js"></script>
+<script type="text/javascript" src="LevelManager.js"></script>
+<script type="text/javascript" src="RessourceMngr.js"></script>
+<script type="text/javascript" src="Customers.js"></script>
+<script type="text/javascript" src="Beerglass.js"></script>
+<script type="text/javascript" src="Player.js"></script>
+<script type="text/javascript" src="Main.js"></script>
+<div class="NFO">
+<center> <b>---==[ Instructions ]==---</b><br>
+Use arrow keys to move the barman,<br>
+Hold "Space" bar to fill a mug, and release when full to serve !<br>
+<br>
+Collect all the empty mugs, and perhaps some tips for extra points. </center>
+</div>
+</center>
+<br>
+<center> <b>Browser Compatibility</b><br>
+<b>---------------------</b><br>
+Chrome 6.0 : <b>fully working</b><br>
+Safari 5.0.3 : <b>fully working</b><br>
+Other browsers : <span style="font-weight: bold;">not tested</span> <br>
+<br>
+Feel free to post a comment about your browser compatibility on my <a
+ href="http://olivierbiot.wordpress.com/2010/09/17/mini-tapper-js/">blog</a>.<br>
+<br>
+<hr style="width: 100%; height: 2px;"></center>
+</div>
+&nbsp;&nbsp;&nbsp; Known Issues / Todo list :<br>
+&nbsp;&nbsp;&nbsp; ----------------------<br>
+&nbsp;&nbsp;&nbsp; - difficulty is not really linear<br>
+&nbsp;&nbsp;&nbsp; - some animations are missing (e.g. customers
+reaching the end of a row, emptying glass, etc..)<br>
+&nbsp;&nbsp;&nbsp; - no fallback for sounds (only use mp3)&nbsp;<br>
+&nbsp;&nbsp;&nbsp; <span style="text-decoration: line-through;">
+- sound is laggy under Safari due to systematic
+reload of the mp3 when cloneNode is called<br></span>
+&nbsp;&nbsp;&nbsp; <span style="text-decoration: line-through;">
+- preloader is not always... preloading !</span> <br><br>
+</div>
+<div id="footer"><br>
+<p>&copy; 2010 Olivier Biot - contact me at my <a
+ href="http://olivierbiot.wordpress.com/">blog</a></p>
+</div>
+<!-- End Footer --></div>
+<!-- End container -->
+</body>
+</html>

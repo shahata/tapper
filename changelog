@@ -1,0 +1,9 @@
+
+1.1b (29.10.10) :
+ - various bug fixing & optimization
+ - new video init routine
+ - sound manager rewrote, bringing full working sound with Safari & Chrome
+ - preloading finally working
+
+1.0b (17.10.10) : 
+ - public release
